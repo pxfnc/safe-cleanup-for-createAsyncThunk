@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
   decrement,
   increment,
@@ -8,18 +8,28 @@ import {
   incrementAsync,
   incrementIfOdd,
   selectCount,
-} from './counterSlice';
-import styles from './Counter.module.css';
+} from "./counterSlice";
+import styles from "./Counter.module.css";
 
 export function Counter() {
   const count = useAppSelector(selectCount);
   const dispatch = useAppDispatch();
-  const [incrementAmount, setIncrementAmount] = useState('2');
+  const [incrementAmount, setIncrementAmount] = useState("2");
+  const fetchStatus = useAppSelector((state) => state.counter.status);
 
   const incrementValue = Number(incrementAmount) || 0;
 
+  useEffect(() => {
+    // when Counter mounted, fetchCount will be called
+    const result = dispatch(incrementAsync(100));
+
+    // when Counter unmounted, abort the fetchCount
+    return () => result.abort();
+  }, [dispatch]);
+
   return (
     <div>
+      <span>(status: {fetchStatus})</span>
       <div className={styles.row}>
         <button
           className={styles.button}
